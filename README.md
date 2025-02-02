@@ -1,0 +1,2 @@
+# sqlconnect
+ mamp php scripts
