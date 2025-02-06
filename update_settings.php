@@ -1,29 +1,43 @@
 <?php
+
 $con = mysqli_connect('localhost', 'root', 'root', 'unityaccess');
 
 // Check connection
+
 if (mysqli_connect_errno()) {
-    echo "1: Connection failed"; 
-    exit();
+
+echo "1: Connection failed"; 
+
+exit();
+
 }
 
 $username = $_POST["username"];
 
-// Prepare statement to prevent SQL injection
-$sql = "SELECT level FROM players WHERE username = ?";
-$stmt = $con->prepare($sql);
-$stmt->bind_param("s", $username);
-$stmt->execute();
-$stmt->store_result();
+$settingName = $_POST["settingName"];
 
-if ($stmt->num_rows > 0) {
-    $stmt->bind_result($level);
-    $stmt->fetch();
-    echo "0:" . $level; // Success, output player's level
+$value = $_POST["value"];
+
+// Sanitize inputs to prevent SQL Injection
+
+$username = mysqli_real_escape_string($con, $username);
+
+$settingName = mysqli_real_escape_string($con, $settingName);
+
+$value = mysqli_real_escape_string($con, $value);
+
+// Update the setting
+
+$sql = "UPDATE players SET $settingName = '$value' WHERE username = '$username'";
+
+if (mysqli_query($con, $sql)) {
+
+echo "0"; // Success
+
 } else {
-    echo "2: User not found"; // Error code for user not found
+
+echo "2: Update failed"; // Error code
+
 }
 
-$stmt->close();
-$con->close();
 ?>
